@@ -12,8 +12,8 @@ CFLAGS += -fdata-sections -ffunction-sections
 ASFLAGS += -c
 
 # LD flags
-LDFLAGS += -flto 
-LDFLAGS += -nostdlib
+LDFLAGS += -flto
+LDFLAGS += -ffreestanding -nostdlib
 LDFLAGS += -T arch/config/link.ld 
 LDFLAGS += -Wl,--gc-sections
 

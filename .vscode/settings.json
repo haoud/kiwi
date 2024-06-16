@@ -10,4 +10,7 @@
         "false=0",
         "true=1",
     ],
+    "files.exclude": {
+        "toolchain/": true
+    },
 }

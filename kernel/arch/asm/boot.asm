@@ -1,5 +1,3 @@
-.intel_syntax noprefix
-
 # Multiboot 1 header
 .set MULTIBOOT_MAGIC, 0x1BADB002
 .set MULTIBOOT_FLAGS, 0x00000003
@@ -16,10 +14,12 @@
 .global _start
 .align 4
 _start:
-  mov esp, stack_top
-  call startup
+  movl $stack_top, %esp
+  movl $0, %ebp
+  jmp startup
 
 .section .bss
-stack_bottom:	
-.space 4096
+stack_bottom:
+.align 16
+.skip 4096
 stack_top:

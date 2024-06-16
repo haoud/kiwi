@@ -20,11 +20,11 @@
 #include <arch/console.h>
 
 [[noreturn]]
-void startup(void) {
+void startup(void) 
+{
     console_setup();
     console_write("Hello, world !\n");
+    console_write("Hello, kernel !\n");
 
-    for (;;) {
-        asm("hlt");
-    }
+    for (;;) {}
 }

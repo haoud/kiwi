@@ -12,12 +12,10 @@ clean:
 	make -C kernel clean
 
 run: build
-	qemu-system-i386 -m 128 	\
-		-kernel kernel/kiwi.elf \
-		-no-shutdown 			\
-		-no-reboot 				\
-		-serial stdio			\
-		-smp 4
+	qemu-system-i386 -m 128			\
+		-kernel kernel/kiwi.elf 	\
+		-serial stdio				\
+		-smp 1
 
 config-clangd:
 	bear -- make build
