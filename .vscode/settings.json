@@ -1,0 +1,13 @@
+{
+    "C_Cpp.default.compilerPath": "${workspaceFolder}/toolchain/bin/i686-elf-gcc",
+    "C_Cpp.default.cStandard": "gnu23",
+    "C_Cpp.default.compilerArgs": [
+        "-ffreestanding",
+        "-std=gnu23",
+        "-I include"
+    ],
+    "C_Cpp.default.defines": [
+        "false=0",
+        "true=1",
+    ],
+}

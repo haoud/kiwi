@@ -1,0 +1,7 @@
+*.o
+*.elf
+*.log
+
+bin/
+.cache/
+toolchain/
