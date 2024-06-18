@@ -17,15 +17,17 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <stddef.h>
-#include <stdint.h>
+#include <kernel.h>
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+/**
+ * @brief A string slice.
+ */
+struct str {
+    char *data;
+    size_t len;
+};
 
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
+bool str_is_valid(const struct str *s);
+bool str_is_empty(const struct str *s);
+bool str_set_char(struct str *s, char data, size_t idx);
+struct str str_slice(const struct str *s, size_t start, size_t end);

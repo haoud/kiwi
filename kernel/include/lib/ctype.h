@@ -17,15 +17,28 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include <stddef.h>
-#include <stdint.h>
+#include <kernel.h>
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+/**
+ * @brief Check if a character is a digit
+ * 
+ * @param c The character to check
+ * @return true If the character is a digit
+ * @return false If the character is not a digit
+ */
+static inline bool isdigit(const char c)
+{
+    return c >= '0' && c <= '9';
+}
 
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
+/**
+ * @brief Convert a character to an integer, assuming the character is
+ * a digit. If the character is not a digit, the result is undefined.
+ * 
+ * @param c The character to convert
+ * @return unsigned int The integer value of the character
+ */
+static inline unsigned int ctoi(const char c)
+{
+    return c - '0';
+}

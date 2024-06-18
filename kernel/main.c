@@ -17,14 +17,25 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel.h>
+#include <lib/str.h>
+#include <lib/string.h>
 #include <arch/console.h>
 
+// TODO: 
+// - UBsan
+// - Stack canary
+// - Panic, assert, assume
+// - Serial logging
 [[noreturn]]
 void startup(void) 
 {
     console_setup();
-    console_write("Hello, world !\n");
-    console_write("Hello, kernel !\n");
 
+    // Test number formatting
+    char buf[13] = { };
+    snprintf(buf, sizeof(buf), "Hello, %i !\n", -1);
+    console_write(buf);
+
+    console_write("Boot completed !\n");
     for (;;) {}
 }

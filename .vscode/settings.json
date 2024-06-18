@@ -10,7 +10,13 @@
         "false=0",
         "true=1",
     ],
-    "files.exclude": {
-        "toolchain/": true
+    "files.associations": {
+        "*.c": "c",
+        "*.h": "c"
     },
+    "files.exclude": {
+        "toolchain/": true,
+        "**/*.elf": true,
+        "**/*.o": true
+    }
 }
