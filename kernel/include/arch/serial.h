@@ -16,30 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 #include <kernel.h>
-#include <lib/str.h>
-#include <lib/string.h>
-#include <arch/serial.h>
-#include <arch/console.h>
 
-// TODO: 
-// - UBsan
-// - Stack canary
-// - Panic, assert, assume
-// - Serial logging
-[[noreturn]]
-void startup(void) 
-{
-    serial_setup();
-    console_setup();
+#define SERIAL_COM1 0x3F8
+#define SERIAL_COM2 0x2F8
+#define SERIAL_COM3 0x3E8
+#define SERIAL_COM4 0x2E8
 
-    serial_send_str("Hello, serial port !\n");
+void serial_setup(void);
+void serial_send_byte(const char c);
+void serial_send_str(const char *str);
 
-    // Test number formatting
-    char buf[13] = { };
-    snprintf(buf, sizeof(buf), "Hello, %i !\n", -1);
-    console_write(buf);
-
-    console_write("Boot completed !\n");
-    for (;;) {}
-}
