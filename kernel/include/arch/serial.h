@@ -27,4 +27,4 @@
 void serial_setup(void);
 void serial_send_byte(const char c);
 void serial_send_str(const char *str);
-
+void serial_printf(const char *fmt, ...);

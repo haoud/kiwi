@@ -58,6 +58,6 @@ struct number_format {
 
 
 struct str number(struct str buffer, int number, struct number_format format);
-int vvsnprintfsnprintf(char *buffer, size_t n, const char *format, va_list arg);
+int vsnprintf(char *buffer, size_t n, const char *format, va_list arg);
 int snprintf(char *buffer, size_t n, const char *format, ...);
 size_t strlen(const char *s);

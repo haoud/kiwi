@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <stdarg.h>
 #include <arch/io.h>
 #include <arch/serial.h>
+#include <lib/string.h>
 
 void serial_setup(void)
 {
@@ -53,4 +55,21 @@ void serial_send_str(const char *str)
     while (*str != '\0') {
         serial_send_byte(*str++);
     }
+}
+
+/**
+ * @brief Format a string and send it over the serial port. This function is
+ * similar to printf, but it only supports a subset of the formatting options.
+ * 
+ * @param fmt The format string
+ * @param ... Optional arguments to format depending on the format string
+ */
+void serial_printf(const char *fmt, ...)
+{
+    char buffer[256];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+    serial_send_str(buffer);
 }

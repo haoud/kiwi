@@ -23,8 +23,6 @@
 #include <arch/console.h>
 
 // TODO: 
-// - UBsan
-// - Stack canary
 // - Panic, assert, assume
 // - Serial logging
 [[noreturn]]
@@ -34,12 +32,6 @@ void startup(void)
     console_setup();
 
     serial_send_str("Hello, serial port !\n");
-
-    // Test number formatting
-    char buf[13] = { };
-    snprintf(buf, sizeof(buf), "Hello, %i !\n", -1);
-    console_write(buf);
-
     console_write("Boot completed !\n");
     for (;;) {}
 }

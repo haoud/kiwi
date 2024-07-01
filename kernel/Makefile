@@ -1,7 +1,7 @@
 TARGET = kiwi.elf
 
 CFLAGS += -O2 -flto -march=i686
-CFLAGS += -c -ffreestanding
+CFLAGS += -c -ffreestanding -fsanitize=undefined
 CFLAGS += -masm=intel
 CFLAGS += -std=gnu23 
 CFLAGS += -I include
@@ -12,7 +12,7 @@ CFLAGS += -fdata-sections -ffunction-sections
 ASFLAGS += -c
 
 # LD flags
-LDFLAGS += -flto
+LDFLAGS += -flto -fsanitize=undefined
 LDFLAGS += -ffreestanding -nostdlib
 LDFLAGS += -T arch/config/link.ld 
 LDFLAGS += -Wl,--gc-sections
