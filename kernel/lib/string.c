@@ -214,7 +214,7 @@ int vsnprintf(char *buffer, size_t size, const char *format, va_list ap)
 
     // Write the null terminator to the buffer and return the
     // number of characters written
-    start[size - n] = '\0';
+    start[size - n - 1] = '\0';
     return size - n;
 }
 
