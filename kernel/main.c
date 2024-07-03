@@ -17,14 +17,10 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel.h>
-#include <lib/str.h>
-#include <lib/string.h>
+#include <lib/panic.h>
 #include <arch/serial.h>
 #include <arch/console.h>
 
-// TODO: 
-// - Panic, assert, assume
-// - Serial logging
 [[noreturn]]
 void startup(void) 
 {
@@ -33,5 +29,5 @@ void startup(void)
 
     serial_send_str("Hello, serial port !\n");
     console_write("Boot completed !\n");
-    for (;;) {}
+    panic("Nothing to do... yet !");
 }

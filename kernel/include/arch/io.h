@@ -30,7 +30,7 @@
  */
 static inline void out8(u16 port, u8 data) 
 {
-    asm volatile("outb %0, al" :: "Nd"(port), "a"(data));
+    asm volatile("outb %0, al" : : "Nd"(port), "a"(data));
 }
 
 /**
@@ -44,7 +44,7 @@ static inline void out8(u16 port, u8 data)
  */
 static inline void out16(u16 port, u16 data) 
 {
-    asm volatile("outw %0, ax" :: "Nd"(port), "a"(data));
+    asm volatile("outw %0, ax" : : "Nd"(port), "a"(data));
 }
 
 /**
@@ -58,7 +58,7 @@ static inline void out16(u16 port, u16 data)
  */
 static inline void out32(u16 port, u32 data) 
 {
-    asm volatile("outd %0, eax" :: "Nd"(port), "a"(data));
+    asm volatile("outd %0, eax" : : "Nd"(port), "a"(data));
 }
 
 /**

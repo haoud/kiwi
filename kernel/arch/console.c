@@ -16,9 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
+#include <stdarg.h>
 #include <memory.h>
 #include <arch/io.h>
 #include <arch/console.h>
+#include <lib/string.h>
 
 static const unsigned int HEIGHT = 25;
 static const unsigned int WIDTH = 80;
@@ -175,4 +178,24 @@ void console_write(const char *str)
         }
         console_set_cursor(X, Y);
     }
+}
+
+/**
+ * @brief Write a formatted string to the console. This function is similar
+ * to printf, but it only supports a subset of the formatting options. The
+ * formatted string will be written to the console using console_write.
+ * 
+ * @param format  The format string
+ * @param ... Optional arguments to format depending on the format string
+ */
+void console_printf(const char *format, ...)
+{
+    char buffer[PRINTF_BUFFER_SIZE];
+    va_list ap;
+    
+    va_start(ap, format);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
+    va_end(ap);
+    
+    console_write(buffer);
 }

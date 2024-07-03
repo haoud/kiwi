@@ -23,3 +23,4 @@ bool console_exist();
 void console_clear();
 void console_scrollup();
 void console_write(const char *str);
+void console_printf(const char *fmt, ...);

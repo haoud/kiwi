@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <stdarg.h>
 #include <arch/io.h>
 #include <arch/serial.h>
@@ -66,10 +67,12 @@ void serial_send_str(const char *str)
  */
 void serial_printf(const char *fmt, ...)
 {
-    char buffer[256];
+    char buffer[PRINTF_BUFFER_SIZE];
     va_list args;
+
     va_start(args, fmt);
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
+    
     serial_send_str(buffer);
 }

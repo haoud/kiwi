@@ -30,7 +30,7 @@ static void ubsan_abort(
     const struct ubsan_source_location *location,
     const char *message)
 {
-    serial_printf("%s:%u:%u ubsan abort : %s\n",
+    serial_printf("[%s:%u:%u] ubsan abort : %s\n",
         location->file,
         location->line,
         location->column,
