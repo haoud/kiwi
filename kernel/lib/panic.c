@@ -20,6 +20,7 @@
 #include <stdarg.h>
 #include <lib/panic.h>
 #include <lib/string.h>
+#include <arch/cpu.h>
 #include <arch/serial.h>
 #include <arch/console.h>
 
@@ -41,14 +42,13 @@ static bool panicked = false;
  * @brief Write a message to the serial port and halt the system. This
  * function is called when the kernel encounters an unrecoverable error
  * and cannot continue execution.
- * 
+ *
  * @param fmt The format string to print
  * @param ... Arguments to the format string
  */
 [[noreturn]]
 void panic(const char* fmt, ...)
 {
-    
     char buffer[PRINTF_BUFFER_SIZE];
     va_list args;
 
@@ -62,6 +62,6 @@ void panic(const char* fmt, ...)
         panic_printf("Kernel panic: %s\n", buffer);
         panic_printf("Cannot continue, halting...\n");
     }
-    
+
     cpu_freeze();
 }

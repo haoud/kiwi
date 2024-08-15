@@ -1,21 +1,23 @@
 TARGET = kiwi.elf
 
-CFLAGS += -O2 -flto -march=i686
+COMMON += -O2 -flto -march=$(ARCH)
+COMMON += -ffreestanding -fsanitize=undefined
+
+CFLAGS += -std=gnu23 -masm=intel
+CFLAGS += -O2 -flto -march=i686 -I include
 CFLAGS += -c -ffreestanding -fsanitize=undefined
-CFLAGS += -masm=intel
-CFLAGS += -std=gnu23 
-CFLAGS += -I include
 CFLAGS += -W -Wall -Wextra -Wshadow -Wredundant-decls
 CFLAGS += -fdata-sections -ffunction-sections
+CFLAGS += $(COMMON)
+
+# LD flags
+LDFLAGS += -nostdlib
+LDFLAGS += -T arch/config/link.ld
+LDFLAGS += -Wl,--gc-sections
+LDFLAGS += $(COMMON)
 
 # AS flags
 ASFLAGS += -c
-
-# LD flags
-LDFLAGS += -flto -fsanitize=undefined
-LDFLAGS += -ffreestanding -nostdlib
-LDFLAGS += -T arch/config/link.ld 
-LDFLAGS += -Wl,--gc-sections
 
 # Source files
 ASFILES = $(shell find . -type f -name "*.asm")
@@ -27,7 +29,7 @@ OBJFILES += $(CFILES:.c=.o)
 
 .PHONY: all clean
 
-all: $(TARGET) 
+all: $(TARGET)
 
 $(TARGET): $(OBJFILES)
 	$(LD) $(LDFLAGS) -o $@ $^

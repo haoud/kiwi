@@ -18,11 +18,18 @@
  */
 #pragma once
 
+/**
+ * @brief Stop the execution of the core that calls this function. It does
+ * not return and the core is stopped until a reset is performed. Other cores
+ * are not affected.
+ */
 [[noreturn]]
-static inline void cpu_freeze()
+static inline void cpu_freeze(void)
 {
     for(;;) {
         asm volatile("cli");
         asm volatile("hlt");
     }
 }
+
+void gdt_install(void);

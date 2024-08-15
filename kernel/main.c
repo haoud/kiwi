@@ -18,16 +18,18 @@
  */
 #include <kernel.h>
 #include <lib/panic.h>
+#include <arch/cpu.h>
 #include <arch/serial.h>
 #include <arch/console.h>
 
 [[noreturn]]
-void startup(void) 
+void startup(void)
 {
     serial_setup();
     console_setup();
+    gdt_install();
 
     serial_send_str("Hello, serial port !\n");
     console_write("Boot completed !\n");
-    panic("Nothing to do... yet !");
+    cpu_freeze();
 }

@@ -1,7 +1,13 @@
+# Ignore some directories that are created by the build process
+# or contain build artifacts or binaries
+bin/
+.cache/
+toolchain/
+
+# Ignore build artifacts
 *.o
 *.elf
 *.log
 
-bin/
-.cache/
-toolchain/
+# Ignore clangd's configuration file (dynamically generated)
+compile_commands.json

@@ -34,13 +34,13 @@ void serial_setup(void)
  * @brief Block until the serial port is ready to send a byte, then send it.
  * This function is very simple and incomplete and should not be used in
  * production except for debugging purposes.
- * 
+ *
  * @param c The byte to send
  */
 void serial_send_byte(const char c)
 {
     while ((in8(SERIAL_COM1 + 5) & 0x20) == 0) {
-        // TODO: Spinloop hint for the CPU
+        asm volatile("pause" ::: "memory");
     }
     out8(SERIAL_COM1, c);
 }
@@ -48,10 +48,10 @@ void serial_send_byte(const char c)
 /**
  * @brief Send a null-terminated string over the serial port. It will block
  * until the entire string is sent over the serial port.
- * 
+ *
  * @param str The string to send
  */
-void serial_send_str(const char *str) 
+void serial_send_str(const char *str)
 {
     while (*str != '\0') {
         serial_send_byte(*str++);
@@ -61,7 +61,7 @@ void serial_send_str(const char *str)
 /**
  * @brief Format a string and send it over the serial port. This function is
  * similar to printf, but it only supports a subset of the formatting options.
- * 
+ *
  * @param fmt The format string
  * @param ... Optional arguments to format depending on the format string
  */
@@ -73,6 +73,6 @@ void serial_printf(const char *fmt, ...)
     va_start(args, fmt);
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
-    
+
     serial_send_str(buffer);
 }
