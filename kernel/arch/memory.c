@@ -43,3 +43,10 @@ void *memcpy(void *restrict dst, const void *restrict src, size_t n) {
     }
     return dst;
 }
+
+void memset(void *b, int c, size_t len) {
+    unsigned char *dst = (unsigned char *) b;
+    for (size_t i = 0; i < len; i++) {
+        dst[i] = (unsigned char) c;
+    }
+}

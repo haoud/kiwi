@@ -18,6 +18,10 @@
  */
 #pragma once
 
+/**
+ * @brief Halt the CPU forever
+ * 
+ */
 [[noreturn]]
 static inline void cpu_freeze()
 {

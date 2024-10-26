@@ -14,9 +14,9 @@
 .global _start
 .align 4
 _start:
-  movl $stack_top, %esp
-  movl $0, %ebp
-  jmp startup
+    movl $stack_top, %esp
+    movl $0, %ebp
+    jmp startup
 
 .section .bss
 stack_bottom:

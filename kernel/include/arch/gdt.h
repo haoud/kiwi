@@ -21,8 +21,8 @@
 
 #define GDT_MAX_ENTRIES     8
 
-// Descriptor Privilege Level. Silicium only supports DLP 0 (kernel) and DLP 3
-// (user) and does not use the DLP 1 and 2.
+// Descriptor Privilege Level. Silicium only supports DLP 0 (kernel) and
+// DLP 3 (user) and does not use the DLP 1 and 2.
 
 #define GDT_KERNEL_DLP  0
 #define GDT_USER_DLP    3
@@ -94,4 +94,5 @@ struct tss {
     u16 debug, io_map;
 } __attribute__((packed));
 
-void gdt_setup(void); 
+void gdt_setup(void);
+void gdt_set_tss_esp0(u32 esp);

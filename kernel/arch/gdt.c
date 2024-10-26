@@ -82,6 +82,7 @@ void gdt_setup(void)
     gdt_set_descriptor(4, 0, 0xFFFFFFFF, GDT_USER_DLP, GDT_DATA_WRITABLE);
 
     // Setup the TSS
+    TSS.ss0 = GDT_KERNEL_DS;
     gdt_set_system_descriptor(5, &TSS);
 
     // Compute the GDT register
@@ -99,4 +100,15 @@ void gdt_setup(void)
                   mov gs, ax        \n\
                   jmp 0x08:1f       \n\
                 1:" : : "i" (GDT_KERNEL_DS));
+}
+
+/**
+ * @brief Set the ESP0 field of the TSS. This function is used to set the
+ * stack pointer of the kernel when the processor switches to ring 0.
+ * 
+ * @param esp The stack pointer to set.
+ */
+void gdt_set_tss_esp0(u32 esp)
+{
+    TSS.esp0 = esp;
 }

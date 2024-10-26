@@ -128,8 +128,8 @@ void console_setup()
  * always return true, as we assume that the VGA text mode is always available
  * on x86 systems.
  * 
- * @return true 
- * @return false 
+ * @return true if the console subsystem is available
+ * @return false if the console subsystem is not available
  */
 bool console_exist()
 {
