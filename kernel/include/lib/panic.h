@@ -19,4 +19,4 @@
 #pragma once
 #include <kernel.h>
 
-void panic(const char* fmt, ...);
+[[noreturn]] void panic(const char* fmt, ...);

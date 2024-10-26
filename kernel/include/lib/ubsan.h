@@ -77,3 +77,8 @@ struct ubsan_ptr_overflow_info {
 struct ubsan_unreachable_info {
     struct ubsan_source_location location;
 };
+
+struct ubsan_invalid_value_data {
+	struct ubsan_source_location location;
+	struct ubsan_type_descriptor* type;
+};

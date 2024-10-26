@@ -27,7 +27,7 @@ void startup(void)
     serial_setup();
     console_setup();
 
-    serial_send_str("Hello, serial port !\n");
+    serial_send_str("Serial port initialized\n");
     console_write("Boot completed !\n");
     panic("Nothing to do... yet !");
 }

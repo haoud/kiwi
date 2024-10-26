@@ -155,3 +155,12 @@ void __ubsan_handle_divrem_overflow(void *data,
     struct ubsan_overflow_desc *info = data;
     ubsan_abort(&info->location, "divrem overflow");
 }
+
+_ubsan
+void __ubsan_handle_load_invalid_value(void* data,
+    [[maybe_unused]] void* value)
+{
+	struct ubsan_invalid_value_data* info =
+		(struct ubsan_invalid_value_data*) data;
+	ubsan_abort(&info->location, "invalid value load");
+}

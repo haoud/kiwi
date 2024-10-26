@@ -20,9 +20,13 @@
 #include <stdarg.h>
 #include <lib/panic.h>
 #include <lib/string.h>
+#include <arch/cpu.h>
 #include <arch/serial.h>
 #include <arch/console.h>
 
+// Print a message to the serial port and the console. This allows to have
+// more debug informations in case of a panic if the serial port and/or the
+// console are still working.
 #define panic_printf(fmt, ...)              \
     do {                                    \
         serial_printf(fmt, ##__VA_ARGS__);  \
@@ -48,18 +52,17 @@ static bool panicked = false;
 [[noreturn]]
 void panic(const char* fmt, ...)
 {
-    
-    char buffer[PRINTF_BUFFER_SIZE];
-    va_list args;
-
     if (!panicked) {
         panicked = true;
+
+        char buffer[PRINTF_BUFFER_SIZE];
+        va_list args;
 
         va_start(args, fmt);
         vsnprintf(buffer, sizeof(buffer), fmt, args);
         va_end(args);
 
-        panic_printf("Kernel panic: %s\n", buffer);
+        panic_printf("Fatal error: %s\n", buffer);
         panic_printf("Cannot continue, halting...\n");
     }
     
