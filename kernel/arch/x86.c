@@ -16,8 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
+#include <arch/gdt.h>
+#include <arch/serial.h>
+#include <arch/console.h>
 
-#define memmove(dst, src, len)  __builtin_memmove(dst, src, len)
-#define memcpy(dst, src, len)   __builtin_memcpy(dst, src, len)
-#define memset(dst, val, len)   __builtin_memset(dst, val, len)
+void arch_x86_setup(void)
+{
+    console_setup();
+    serial_setup();
+
+    gdt_setup();
+    // IDT, IRQ, Exceptions
+    // Pagination
+}

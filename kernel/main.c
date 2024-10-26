@@ -17,17 +17,14 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel.h>
-#include <lib/panic.h>
-#include <arch/serial.h>
+#include <arch/x86.h>
 #include <arch/console.h>
 
 [[noreturn]]
 void startup(void) 
 {
-    serial_setup();
-    console_setup();
+    arch_x86_setup();
 
-    serial_send_str("Serial port initialized\n");
     console_write("Boot completed !\n");
-    panic("Nothing to do... yet !");
+    cpu_freeze(); 
 }
