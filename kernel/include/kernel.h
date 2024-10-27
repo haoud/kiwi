@@ -32,3 +32,8 @@ typedef int64_t i64;
 
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define likely(x)       __builtin_expect(!!(x), 1)
+
+#define _noreturn       __attribute__((noreturn))
+
+#define _cold           __attribute__((cold))
+#define _hot            __attribute__((hot))

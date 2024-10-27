@@ -22,7 +22,7 @@
  * @brief Halt the CPU forever
  * 
  */
-[[noreturn]]
+_cold _noreturn
 static inline void cpu_freeze()
 {
     for(;;) {

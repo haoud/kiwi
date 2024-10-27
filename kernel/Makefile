@@ -5,7 +5,7 @@ CFLAGS += -c -ffreestanding -fsanitize=undefined
 CFLAGS += -masm=intel
 CFLAGS += -std=gnu23 
 CFLAGS += -I include
-CFLAGS += -W -Wall -Wextra -Wshadow -Wredundant-decls
+CFLAGS += -W -Wall -Wextra -Wshadow -Wredundant-decls -Wno-unused-function
 CFLAGS += -fdata-sections -ffunction-sections
 
 # AS flags

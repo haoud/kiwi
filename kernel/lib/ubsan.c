@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Silicium. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <lib/panic.h>
 #include <lib/ubsan.h>
 #include <arch/serial.h>
 
@@ -25,7 +26,7 @@
  * @param location The location of the error in the source code
  * @param message The error message
  */
-_ubsan
+_cold _ubsan
 static void ubsan_abort(
     const struct ubsan_source_location *location,
     const char *message)
@@ -37,10 +38,10 @@ static void ubsan_abort(
         message
     );
 
-    for(;;) {}
+    abort();
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_type_mismatch_v1(void *data,
     [[maybe_unused]] void *ptr)
 {
@@ -57,7 +58,7 @@ void __ubsan_handle_type_mismatch_v1(void *data,
     }
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_add_overflow(void *data,
     [[maybe_unused]] void *lhs,
     [[maybe_unused]] void *rhs)
@@ -66,7 +67,7 @@ void __ubsan_handle_add_overflow(void *data,
     ubsan_abort(&desc->location, "add overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_sub_overflow(void* data,
     [[maybe_unused]] void* lhs,
     [[maybe_unused]] void* rhs)
@@ -75,7 +76,7 @@ void __ubsan_handle_sub_overflow(void* data,
     ubsan_abort(&desc->location, "sub overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_mul_overflow(void *data, 
     [[maybe_unused]] void *lhs,
     [[maybe_unused]] void *rhs)
@@ -84,7 +85,7 @@ void __ubsan_handle_mul_overflow(void *data,
     ubsan_abort(&desc->location, "mul overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_negate_overflow(void *data, 
     [[maybe_unused]] void *old_value)
 {
@@ -92,7 +93,7 @@ void __ubsan_handle_negate_overflow(void *data,
     ubsan_abort(&desc->location, "negate overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_shift_out_of_bounds(void *data,
     [[maybe_unused]] void *lhs,
     [[maybe_unused]] void *rhs)
@@ -101,7 +102,7 @@ void __ubsan_handle_shift_out_of_bounds(void *data,
     ubsan_abort(&info->location, "shift out of bounds");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_out_of_bounds(void* data,
     [[maybe_unused]] void* index)
 {
@@ -109,21 +110,21 @@ void __ubsan_handle_out_of_bounds(void* data,
     ubsan_abort(&info->location, "out of bounds");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_builtin_unreachable(void* data)
 {
     struct ubsan_unreachable_info *info = data;
     ubsan_abort(&info->location, "unreachable reached");   
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_missing_return(void* data)
 {
     struct ubsan_unreachable_info *info = data;
     ubsan_abort(&info->location, "missing return");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_function_type_mismatch(void *data,
     [[maybe_unused]] void *value)
 {
@@ -131,14 +132,14 @@ void __ubsan_handle_function_type_mismatch(void *data,
     ubsan_abort(&info->location, "function type mismatch");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_nonnull_return(void *data)
 {
     struct ubsan_nonnull_return_info *info = data;
     ubsan_abort(&info->location, "nonnull returned null");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_pointer_overflow(void *data, 
     [[maybe_unused]] void *base,
     [[maybe_unused]] void *result)
@@ -147,7 +148,7 @@ void __ubsan_handle_pointer_overflow(void *data,
     ubsan_abort(&info->location, "pointer overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_divrem_overflow(void *data, 
     [[maybe_unused]] void *lhs,
     [[maybe_unused]] void *rhs)
@@ -156,7 +157,7 @@ void __ubsan_handle_divrem_overflow(void *data,
     ubsan_abort(&info->location, "divrem overflow");
 }
 
-_ubsan
+_cold _ubsan
 void __ubsan_handle_load_invalid_value(void* data,
     [[maybe_unused]] void* value)
 {

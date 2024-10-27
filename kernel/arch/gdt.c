@@ -20,7 +20,11 @@
 #include <arch/gdt.h>
 
 static struct gdt_entry GDT[GDT_MAX_ENTRIES] = {};
-static struct gdtr GDTR = {};
+static struct gdtr GDTR = {
+    .size = sizeof(GDT) - 1,
+    .base = (u32) GDT
+};
+
 static struct tss TSS = {};
 
 /**
@@ -82,12 +86,9 @@ void gdt_setup(void)
     gdt_set_descriptor(4, 0, 0xFFFFFFFF, GDT_USER_DLP, GDT_DATA_WRITABLE);
 
     // Setup the TSS
-    TSS.ss0 = GDT_KERNEL_DS;
     gdt_set_system_descriptor(5, &TSS);
-
-    // Compute the GDT register
-    GDTR.size = GDT_MAX_ENTRIES * sizeof(GDT) - 1;
-    GDTR.base = (u32) GDT;
+    TSS.iobp = sizeof(struct tss);
+    TSS.ss0 = GDT_KERNEL_DS;
 
     // Load the GDT and the TSS and reload the segment registers
     asm volatile("lgdt %0" : : "m" (GDTR));

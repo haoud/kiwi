@@ -18,5 +18,5 @@
  */
 #pragma once
 
-// The size of the buffer used by the printf like functions
+// The size of the buffer used by the printf like functions.
 #define PRINTF_BUFFER_SIZE  256

@@ -49,7 +49,7 @@ static bool panicked = false;
  * @param fmt The format string to print
  * @param ... Arguments to the format string
  */
-[[noreturn]]
+_cold _noreturn
 void panic(const char* fmt, ...)
 {
     if (!panicked) {
@@ -66,5 +66,19 @@ void panic(const char* fmt, ...)
         panic_printf("Cannot continue, halting...\n");
     }
     
-    cpu_freeze();
+    abort();
+}
+
+/**
+ * @brief Abort the execution of the program. This function is called when
+ * the program encounters an unrecoverable error and cannot continue, not
+ * even to print an error message. Prefer using panic() instead of this to
+ * allow the kernel to print debug informations in possible.
+ */
+_cold _noreturn
+void abort()
+{
+    for(;;) {
+        cpu_freeze();
+    }
 }

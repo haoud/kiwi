@@ -17,6 +17,7 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <arch/gdt.h>
+#include <arch/trap.h>
 #include <arch/serial.h>
 #include <arch/console.h>
 
@@ -26,6 +27,8 @@ void arch_x86_setup(void)
     serial_setup();
 
     gdt_setup();
-    // IDT, IRQ, Exceptions
+    trap_setup();
+
+    asm volatile("int 0x80");
     // Pagination
 }

@@ -108,8 +108,13 @@ struct str number(struct str buffer, int number, struct number_format format)
  */
 int vsnprintf(char *buffer, size_t size, const char *format, va_list ap)
 {
+    if (size == 0) {
+        return 0;
+    }
+
     char *start = buffer;
     size_t n = size - 1;
+
 
     for (;*format != '\0' && n > 0; format++) {
         // Write the character to the buffer if it is not a format

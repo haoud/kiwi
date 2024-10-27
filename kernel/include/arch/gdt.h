@@ -91,7 +91,7 @@ struct tss {
     u16 fs, __fs;
     u16 gs, __gs;
     u16 ldt, __ldt;
-    u16 debug, io_map;
+    u16 debug, iobp;
 } __attribute__((packed));
 
 void gdt_setup(void);
