@@ -99,11 +99,20 @@ void trap_setup(void)
     asm volatile("lidt %0" : : "m" (IDTR) : "memory");
 }
 
+/**
+ * @brief Disable interrupts on the current CPU core by clearing the IF flag
+ * in the EFLAGS register. However, this does not prevent the CPU from
+ * throwing exceptions.
+ */
 void trap_disable_irq(void)
 {
     asm volatile("cli" : : : "memory");
 }
 
+/**
+ * @brief Enable interrupts on the current CPU core by setting the IF flag
+ * in the EFLAGS register.
+ */
 void trap_enable_irq(void)
 {
     asm volatile("sti" : : : "memory");

@@ -21,6 +21,10 @@
 #include <arch/serial.h>
 #include <arch/console.h>
 
+/**
+ * @brief Initialize the x86 architecture-specific components, such
+ * as the GDT, IDT, and serial port.
+ */
 void arch_x86_setup(void)
 {
     console_setup();
@@ -28,7 +32,4 @@ void arch_x86_setup(void)
 
     gdt_setup();
     trap_setup();
-
-    asm volatile("int 0x80");
-    // Pagination
 }
