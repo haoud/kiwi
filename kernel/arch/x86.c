@@ -19,6 +19,7 @@
 #include <arch/gdt.h>
 #include <arch/trap.h>
 #include <arch/serial.h>
+#include <arch/paging.h>
 #include <arch/console.h>
 
 /**
@@ -32,4 +33,5 @@ void arch_x86_setup(void)
 
     gdt_setup();
     trap_setup();
+    paging_setup();
 }

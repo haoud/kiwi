@@ -18,6 +18,7 @@
  */
 #pragma once
 #include <kernel.h>
+#include <lib/panic.h>
 
 /**
  * @brief Assert that a condition is true. If the condition is false, the

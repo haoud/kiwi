@@ -16,11 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
-#include <kernel.h>
-#include <arch/cpu.h>
+#include <arch/paging.h>
 
-typedef u32 paddr_t;
-typedef u32 vaddr_t;
+// The kernel page directory, defined in arch/asm/boot.asm
+extern struct page_directory kernel_pd;
 
-void arch_x86_setup(void);
+/**
+ * @brief Setup the paging system. Most of the work is done in the boot.asm
+ * file, needed to setup an higher-half kernel. Here, we just need to unmap
+ * the first 4MB of memory, used briefly by the bootloader when setting up
+ * the paging system.
+ */
+void paging_setup() {
+    for (int i = 0; i < 768; i++) {
+        kernel_pd.entries[i].v = 0;
+    }
+}

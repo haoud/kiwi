@@ -20,12 +20,13 @@
 #include <stdarg.h>
 #include <memory.h>
 #include <arch/io.h>
+#include <arch/paging.h>
 #include <arch/console.h>
 #include <lib/string.h>
 
+static const unsigned int BASE = KERNEL_VBASE + 0xB8000;
 static const unsigned int HEIGHT = 25;
 static const unsigned int WIDTH = 80;
-static const unsigned int BASE = 0xB8000;
 
 static unsigned int COLOR = 0x07;
 static unsigned int X = 0;

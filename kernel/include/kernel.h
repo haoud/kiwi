@@ -30,10 +30,65 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 
+/// Assume that a condition is unlikely to be true. This macro is used to give
+/// hints to the compiler that a condition is unlikely to be true and may be
+/// used by the compiler to optimize the code.
 #define unlikely(x)     __builtin_expect(!!(x), 0)
+
+/// Assume that a condition is likely to be true. This macro is used to give
+/// hints to the compiler that a condition is likely to be true and may be used
+/// by the compiler to optimize the code. 
 #define likely(x)       __builtin_expect(!!(x), 1)
 
+/// A function attribute to specify that a function does not return. This
+/// attribute is used to inform the compiler that a function will never return
+/// and allows the compiler to perform optimizations on the function.
+///
+/// Misusing this attribute can lead to undefined behaviour if the function
+/// actually returns, so it should be used with caution.
 #define _noreturn       __attribute__((noreturn))
 
-#define _cold           __attribute__((cold))
-#define _hot            __attribute__((hot))
+/// A function attribute to specify that a function is cold. Cold functions are
+/// functions that are called infrequently. This attribute allows the compiler
+/// to optimize the function for size and to place the function in a special
+/// section of the binary which packs all cold functions together, to improve
+/// the cache locality of the program and to reduce the probability of the
+/// instructions being in the cache since the function is not critical for the
+/// performance of the program.
+#define _cold   __attribute__((cold))
+
+/// A function attribute to specify that a function is hot. Hot functions are
+/// functions that are called frequently and any optimization on those functions
+/// will have a significant impact on the performance of the program.
+///
+/// The hot attribute is used to optimize the function for speed and to place
+/// the function in a special section of the binary which packs all hot 
+/// functions together, to improve the cache locality of the program and
+/// increase the probability of the instructions being in the cache.
+#define _hot    __attribute__((hot))
+
+/// A function attribute to specify that a function is const. Const functions
+/// are functions that do not modify the state of the program and only depend
+/// on their arguments to produce a result. This attribute allows the compiler
+/// to perform optimizations on the function.
+///
+/// If pointer arguments are passed to a const function, the function should not
+/// dereference the pointer or modify the data it points to.
+///
+/// Examples of const functions include abs, sqrt, or exp. Those functions will
+/// always return the same result for the same input values without modifying
+/// any global or static variables.
+#define _const  __attribute__((const))
+
+/// A function attribute to specify that a function is pure and allows the
+/// compiler to perform optimizations on the function.
+/// The pure attribute prohibits a function from modifying the state of the
+/// program that is observable by means other than inspecting the function’s
+/// return value. However, functions declared with the pure attribute can safely
+/// read any non-volatile objects, and modify the value of objects in a way that
+/// does not affect their return value or the observable state of the program. 
+///
+/// Examples of pure functions include strlen or memcmp since they do not modify
+/// the state of the program, but dereferencing a pointer forbids those 
+/// functions to be marked as const.
+#define _pure   __attribute__((pure))
