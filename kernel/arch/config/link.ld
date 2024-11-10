@@ -5,8 +5,12 @@ ENTRY(_start)
 SECTIONS
 {
     . = 0xC0100000;
-	.text BLOCK(4K) : AT(ADDR(.text) - 0xC0000000) {
+    .init BLOCK(4K) : AT(ADDR(.init) - 0xC0000000) {
         *(.multiboot)
+        *(.init*)
+    }
+
+	.text BLOCK(4K) : AT(ADDR(.text) - 0xC0000000) {
         *(.text)
     }
 

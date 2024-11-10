@@ -92,3 +92,12 @@ typedef int64_t i64;
 /// the state of the program, but dereferencing a pointer forbids those 
 /// functions to be marked as const.
 #define _pure   __attribute__((pure))
+
+/// A function attribute to specify that a function is used only during the
+/// initialization of the kernel. When the kernel is fully initialized, all
+/// functions marked with this attribute are removed from the binary to reduce
+/// the size of the kernel.
+///
+/// Calling a function marked with this attribute after the kernel is fully
+/// initialized will result in undefined behaviour.
+#define _init   __attribute__((section(".init")))

@@ -14,7 +14,7 @@
 .long MULTIBOOT_FLAGS
 .long MULTIBOOT_CHECKSUM
 
-.section .text
+.section .init
 .extern startup
 
 # The kernel entry point. This is where the kernel starts executing when the

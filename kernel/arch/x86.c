@@ -26,6 +26,7 @@
  * @brief Initialize the x86 architecture-specific components, such
  * as the GDT, IDT, and serial port.
  */
+_init
 void arch_x86_setup(void)
 {
     console_setup();

@@ -90,6 +90,7 @@ static void idt_set_system_gate(int offset, void *handler)
  * IRQs. Other traps are not handled by the kernel and are left to an default
  * handler that does nothing.
  */
+_init
 void trap_setup(void)
 {
     for (int i = 0; i < IDT_ENTRIES; i++) {

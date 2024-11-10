@@ -20,7 +20,7 @@
 #include <arch/x86.h>
 #include <arch/console.h>
 
-_noreturn
+_init _noreturn
 void startup(void) 
 {
     arch_x86_setup();

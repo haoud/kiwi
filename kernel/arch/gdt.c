@@ -24,7 +24,6 @@ static struct gdtr GDTR = {
     .size = sizeof(GDT) - 1,
     .base = (u32) GDT
 };
-
 static struct tss TSS = {};
 
 /**
@@ -77,6 +76,7 @@ void gdt_set_system_descriptor(int index, struct tss *tss)
  * registers. If we are still here after this function, the GDT is correctly
  * set up (hopefully).
  */
+_init
 void gdt_setup(void)
 {
     // Set the GDT descriptors

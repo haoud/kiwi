@@ -27,6 +27,7 @@ extern struct page_directory kernel_pd;
  * the first 4MB of memory, used briefly by the bootloader when setting up
  * the paging system.
  */
+_init
 void paging_setup() {
     for (int i = 0; i < 768; i++) {
         kernel_pd.entries[i].v = 0;

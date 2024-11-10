@@ -22,6 +22,7 @@
 #include <arch/serial.h>
 #include <lib/string.h>
 
+_init
 void serial_setup(void)
 {
     // HACK: The kernel does not initialize the serial port because it is

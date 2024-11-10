@@ -117,6 +117,7 @@ static void console_set_cursor(unsigned int x, unsigned int y)
  * text on the screen, and clear the screen in case of garbage data in the
  * video memory.
  */
+_init
 void console_setup()
 {
     console_clear();
