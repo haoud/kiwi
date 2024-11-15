@@ -68,10 +68,14 @@ _start:
     jmpl *%ecx
 
 .L2:
+    addl $KERNEL_VBASE, %ebx
     movl $stack_top, %esp
     movl $0, %ebp
     pushl %ebx
-    jmp startup
+    call startup
+    
+.L3:
+    jmp .L3
 
 .section .bss
 .align 4096

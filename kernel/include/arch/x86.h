@@ -18,9 +18,10 @@
  */
 #pragma once
 #include <kernel.h>
+#include <multiboot.h>
 #include <arch/cpu.h>
 
 typedef u32 paddr_t;
 typedef u32 vaddr_t;
 
-void arch_x86_setup(void);
+void arch_x86_setup(struct mb_info *mb_info);

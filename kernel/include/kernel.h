@@ -101,3 +101,12 @@ typedef int64_t i64;
 /// Calling a function marked with this attribute after the kernel is fully
 /// initialized will result in undefined behaviour.
 #define _init   __attribute__((section(".init")))
+
+/// A function attribute to specify that a function must use the cdecl calling
+/// convention. The cdecl calling convention is the default calling convention
+/// used by the C programming language and is used to specify how function
+/// arguments are passed to a function and how the return value is passed back
+/// to the caller. In the cdecl calling convention, function arguments are
+/// pushed onto the stack from right to left and the caller is responsible for
+/// cleaning up the stack after the function returns.
+#define _cdecl  __attribute__((cdecl))

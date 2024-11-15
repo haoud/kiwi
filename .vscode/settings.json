@@ -1,6 +1,8 @@
 {
     "C_Cpp.default.compilerPath": "${workspaceFolder}/toolchain/bin/i686-elf-gcc",
-    "C_Cpp.default.cStandard": "gnu23",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/kernel/include"
+    ],
     "C_Cpp.default.compilerArgs": [
         "-ffreestanding",
         "-std=gnu23",
@@ -10,6 +12,8 @@
         "false=0",
         "true=1",
     ],
+    "C_Cpp.default.intelliSenseMode": "gcc-x86",
+    "C_Cpp.default.cStandard": "gnu23",
     "files.associations": {
         "*.c": "c",
         "*.h": "c",
@@ -19,5 +23,4 @@
         "**/*.elf": true,
         "**/*.o": true
     },
-    "makefile.configureOnOpen": true,
 }
