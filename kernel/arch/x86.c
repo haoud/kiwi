@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <lib/log.h>
 #include <arch/gdt.h>
 #include <arch/trap.h>
 #include <arch/serial.h>
@@ -40,9 +41,7 @@ void arch_x86_setup(struct mb_info *mb_info)
 
     // Print memory information if available
     if (mb_info->flags & MB_INFO_MEMORY) {
-        console_printf("Memory detected: %d KB\n",
-            mb_info->mem_lower + mb_info->mem_upper);
-        serial_printf("Memory detected: %d KB\n",
+        debug("Memory detected: %d KB",
             mb_info->mem_lower + mb_info->mem_upper);
     }
 
@@ -64,9 +63,8 @@ void arch_x86_setup(struct mb_info *mb_info)
             const u32 base = mmap->addr & 0xFFFFFFFF;
             const u32 end = base + (length + - 1);
 
-            serial_printf("Memory region: 0x%08x - 0x%08x (%s)\n",
+            debug("Memory region: 0x%08x - 0x%08x (%s)",
                 base, end, MB_MEMORY_TYPES[mmap->type]);
-            
             mmap = mb_next_mmap(mmap);
         }
     }

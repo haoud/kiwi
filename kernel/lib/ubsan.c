@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Silicium. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <lib/log.h>
 #include <lib/panic.h>
 #include <lib/ubsan.h>
 #include <arch/serial.h>
@@ -31,7 +32,7 @@ static void ubsan_abort(
     const struct ubsan_source_location *location,
     const char *message)
 {
-    serial_printf("[%s:%u:%u] ubsan abort : %s\n",
+    fatal("[%s:%u:%u] ubsan abort : %s",
         location->file,
         location->line,
         location->column,

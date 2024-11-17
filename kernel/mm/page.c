@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <lib/log.h>
+#include <lib/panic.h>
 #include <mm/page.h>
 #include <arch/x86.h>
 #include <arch/paging.h>
-#include <lib/panic.h>
 #include <arch/serial.h>
 
 /// The page array. This array contains information about each physical page
@@ -216,7 +217,7 @@ void page_setup(struct mb_info *mb_info)
         panic("Unable to allocate memory for page array");
     }
 
-    serial_printf("Page array at %08x (%u pages)\n", pages, pg_count);
+    debug("Page array at %08x (%u pages)", pages, pg_count);
 
     // Initialize the page array and poison all pages by default. During the
     // page setup process, we will mark pages as free, reserved, or kernel
@@ -281,8 +282,8 @@ void page_setup(struct mb_info *mb_info)
     const u32 pg_reserved_kib = pg_reserved * 4;
     const u32 pg_poisoned_kib = pg_poisoned * 4;
 
-    serial_printf("Free pages: %u (%u KiB)\n", pg_free, pg_free_kib);
-    serial_printf("Reserved pages: %u (%u KiB)\n", pg_reserved, pg_reserved_kib);
-    serial_printf("Poisoned pages: %u (%u KiB)\n", pg_poisoned, pg_poisoned_kib);
-    serial_printf("Kernel pages: %u (%u KiB)\n", pg_kernel, pg_kernel_kib);
+    debug("Free pages: %u (%u KiB)", pg_free, pg_free_kib);
+    debug("Reserved pages: %u (%u KiB)", pg_reserved, pg_reserved_kib);
+    debug("Poisoned pages: %u (%u KiB)", pg_poisoned, pg_poisoned_kib);
+    debug("Kernel pages: %u (%u KiB)", pg_kernel, pg_kernel_kib);
 }
