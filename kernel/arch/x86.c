@@ -47,9 +47,9 @@ void arch_x86_setup(struct mb_info *mb_info)
     }
 
     // Print memory map if available
-    if (mb_info->flags & MB_INFO_MEM_MAP) {
+    if (mb_info->flags & MB_INFO_MEMMAP) {
+        mb_info->mmap_addr += KERNEL_VBASE;
         struct mb_mmap *mmap = (struct mb_mmap *) mb_info->mmap_addr;
-        const u32 mmap_end = mb_info->mmap_addr + mb_info->mmap_length;
         const char *const MB_MEMORY_TYPES[] = {
             "Unknown",
             "Available",
@@ -59,7 +59,7 @@ void arch_x86_setup(struct mb_info *mb_info)
             "Bad RAM"
         };
 
-        while ((u32) mmap < mmap_end) {
+        while (mmap < mb_mmap_end(mb_info)) {
             const u32 length = mmap->len & 0xFFFFFFFF;
             const u32 base = mmap->addr & 0xFFFFFFFF;
             const u32 end = base + (length + - 1);
@@ -67,9 +67,7 @@ void arch_x86_setup(struct mb_info *mb_info)
             serial_printf("Memory region: 0x%08x - 0x%08x (%s)\n",
                 base, end, MB_MEMORY_TYPES[mmap->type]);
             
-            mmap = (struct mb_mmap *) (
-                (u32) mmap + mmap->size + sizeof(mmap->size)
-            );
+            mmap = mb_next_mmap(mmap);
         }
     }
 

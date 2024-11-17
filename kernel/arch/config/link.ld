@@ -27,6 +27,9 @@ SECTIONS
         *(.bss)
     }
 
+    . = ALIGN(4k);
+    __end = .;
+
     /DISCARD/ : {
         *(.comment*)
         *(.note*)

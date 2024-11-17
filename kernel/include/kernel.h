@@ -30,6 +30,9 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 
+typedef intptr_t iptr;
+typedef uintptr_t uptr;
+
 /// Assume that a condition is unlikely to be true. This macro is used to give
 /// hints to the compiler that a condition is unlikely to be true and may be
 /// used by the compiler to optimize the code.

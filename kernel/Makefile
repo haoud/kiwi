@@ -2,9 +2,7 @@ TARGET = kiwi.elf
 
 CFLAGS += -O2 -flto -march=i686
 CFLAGS += -c -ffreestanding -fsanitize=undefined
-CFLAGS += -masm=intel
-CFLAGS += -std=gnu23
-CFLAGS += -I include
+CFLAGS += -masm=intel -std=gnu23 -I include
 CFLAGS += -W -Wall -Wextra -Wshadow -Wredundant-decls -Wno-unused-function
 CFLAGS += -fdata-sections -ffunction-sections
 

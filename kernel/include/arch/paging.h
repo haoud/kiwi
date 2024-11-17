@@ -22,6 +22,7 @@
 #include <lib/assert.h>
 
 #define KERNEL_VBASE    0xC0000000 
+#define KERNEL_PBASE    0x00100000
 #define KERNEL_MAX_PAGE 0x40000000
 
 struct pde {
@@ -82,9 +83,9 @@ struct page_table {
  * @return vaddr_t The virtual address corresponding to the physical address
  */
 _const
-static inline vaddr_t paddr_to_vaddr(paddr_t paddr) {
-    assert(paddr < KERNEL_MAX_PAGE);
-    return KERNEL_VBASE + paddr;
+static inline vaddr paddr_to_vaddr(paddr addr) {
+    assert(addr < KERNEL_MAX_PAGE);
+    return KERNEL_VBASE + addr;
 }
 
 void paging_setup(void);

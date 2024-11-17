@@ -20,11 +20,13 @@
 #include <multiboot.h>
 #include <arch/x86.h>
 #include <arch/console.h>
+#include <mm/page.h>
 
 _cdecl _init _noreturn
 void startup(struct mb_info *mb_info)
 {
     arch_x86_setup(mb_info);
+    page_setup(mb_info);
 
     console_write("Boot completed !\n");
     cpu_freeze(); 
