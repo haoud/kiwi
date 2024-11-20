@@ -113,3 +113,9 @@ typedef uintptr_t uptr;
 /// pushed onto the stack from right to left and the caller is responsible for
 /// cleaning up the stack after the function returns.
 #define _cdecl  __attribute__((cdecl))
+
+/// A function-like macro to get the offset of a member in a struct. This macro
+/// is used to get the structure address of `type` from the address of `member`
+/// in the structure.
+#define container_of(ptr, type, member) \
+    ((type *) ((char *) (ptr) - offsetof(type, member)))
