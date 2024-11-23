@@ -21,13 +21,19 @@
 #include <multiboot.h>
 #include <arch/x86.h>
 
-#define PAGE_SIZE 4096
+#define PAGE_SIZE   4096
+#define PAGE_SHIFT  12
 
 #define PG_FREE     0x01
 #define PG_KERNEL   0x02
 #define PG_RESERVED 0x04
 #define PG_POISONED 0x08
 #define PG_LOCKED   0x10
+
+void page_setup(struct mb_info *mb_info);
+void page_free(paddr addr);
+void page_use(paddr addr);
+struct page *page_info(paddr addr);
 
 /**
  * @brief Check if a physical address is compatible with the BIOS, i.e. if it
@@ -67,18 +73,30 @@ static inline bool page_lowmem_compatible(paddr addr) {
 }
 
 /**
+ * @brief Get the page information structure for a given page frame number. If
+ * the page frame number is out of range of the physical memory, this function
+ * will return NULL.
+ * 
+ * @param idx The page frame number.
+ * @return struct page* The page information structure if it exists, or NULL if
+ * the page frame number is out of range of the physical memory.
+ */
+static inline struct page *page_pfn_info(u32 idx) {
+    return page_info(idx << PAGE_SHIFT);
+}
+
+/**
  * @brief Get the page index of a physical address.
  * 
  * @param addr The physical address.
  * @return u32 The page index.
  */
-static inline u32 page_idx(paddr addr) {
+static inline u32 page_pfn(paddr addr) {
     return addr / PAGE_SIZE;
 }
 
 struct page {
-    u16 flags;
+    u8 flags;
+    u8 order;
     u16 count;
 };
-
-void page_setup(struct mb_info *mb_info);

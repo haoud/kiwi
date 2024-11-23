@@ -41,6 +41,16 @@ struct list_head {
 #define list_last(list) \
     ((list)->prev)
 
+/// @brief Get the first element of the list as a container structure. If called
+/// on an element of the list, the behavior is undefined.
+#define list_first_entry(list, type, member) \
+    list_entry(list_first(list), type, member)
+
+/// @brief Get the last element of the list as a container structure. If called
+/// on an element of the list, the behavior is undefined.
+#define list_last_entry(list, type, member) \
+    list_entry(list_last(list), type, member)
+
 /// @brief Get the container structure of an element in a list.
 #define list_entry(ptr, type, member) \
     container_of(ptr, type, member)

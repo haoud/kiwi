@@ -29,15 +29,15 @@ _start:
 
     xorl %edi, %edi
     xorl %ebp, %ebp
-    movl $256, %ecx
+    movl $128, %ecx
 
     # Identity map the first 4 MiB of memory
     movl $(kernel_pd - KERNEL_VBASE), %esi
     movl %edi, (%esi)
     orl $0x83,(%esi)
 
-    # Map the first 768 MiB of memory to the kernel address space. If
-    # there is more than 768 MiB of memory, the rest will not be accessible
+    # Map the first 512 MiB of memory to the kernel address space. If
+    # there is more than 512 MiB of memory, the rest will not be accessible
     # to the kernel. This is a serious limitation, but it is good enough
     # for now.
     addl $768*4, %esi
@@ -47,7 +47,7 @@ _start:
 
     addl $4, %esi           # Move to the next page table entry
     addl $0x400000, %edi    # Move to the next 4 MiB page
-    loop .L1                # Repeat for all 768 MiB of memory
+    loop .L1                # Repeat for all 512 MiB of memory
 
     # Load the physical address of the page directory into CR3
     movl $(kernel_pd - KERNEL_VBASE), %edx

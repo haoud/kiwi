@@ -6,7 +6,10 @@
     "C_Cpp.default.compilerArgs": [
         "-ffreestanding",
         "-std=gnu23",
-        "-I include"
+        "-I include",
+        "-Wextra",
+        "-Wall",
+        "-W",
     ],
     "C_Cpp.default.defines": [
         "false=0",

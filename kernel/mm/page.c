@@ -19,6 +19,7 @@
 #include <lib/log.h>
 #include <lib/panic.h>
 #include <mm/page.h>
+#include <mm/buddy.h>
 #include <arch/x86.h>
 #include <arch/paging.h>
 #include <arch/serial.h>
@@ -187,6 +188,22 @@ static void page_change_type(struct page *pg, int type)
 }
 
 /**
+ * @brief Get the page information structure for a given physical address. If
+ * the address is out of range, this function will panic.
+ * 
+ * @param addr The physical address.
+ * @return struct page* The page information structure.
+ */
+static struct page *get_page_info(paddr addr)
+{
+    const u32 idx = page_pfn(addr);
+    if (idx >= pg_count) {
+        panic("get_page_info(): Invalid page address (out of range)");
+    }
+    return &pages[idx];
+}
+
+/**
  * @brief Setup the page array and mark pages as free, reserved, or kernel
  * memory based on the memory map provided by the bootloader.
  * 
@@ -211,7 +228,7 @@ void page_setup(struct mb_info *mb_info)
         panic("Unable to find last regular address in memory map");
     }
 
-    pg_count = page_idx(paddr_align_up(pg_last, PAGE_SIZE));
+    pg_count = page_pfn(paddr_align_up(pg_last, PAGE_SIZE));
     pages = allocate_boot_memory(mb_info, pg_count * sizeof(struct page));
     if (pages == NULL) {
         panic("Unable to allocate memory for page array");
@@ -226,6 +243,7 @@ void page_setup(struct mb_info *mb_info)
     pg_poisoned = pg_count;
     for (u32 i = 0; i < pg_count; i++) {
         pages[i].flags = PG_POISONED;
+        pages[i].order = 0;
         pages[i].count = 0;
     }
 
@@ -233,14 +251,14 @@ void page_setup(struct mb_info *mb_info)
     struct mb_mmap *mmap = (struct mb_mmap *) mb_info->mmap_addr;
     while (mmap < mb_mmap_end(mb_info)) {
         if (mmap->type == MB_MEMORY_AVAILABLE) {
-            const u32 start = page_idx(mmap->addr);
-            const u32 end = page_idx(mmap->addr + mmap->len);
+            const u32 start = page_pfn(mmap->addr);
+            const u32 end = page_pfn(mmap->addr + mmap->len);
             for (u32 i = start; i < end; i++) {
                 page_change_type(&pages[i], PG_FREE);
             }
         } else if (mmap->type == MB_MEMORY_RESERVED) {
-            const u32 start = page_idx(mmap->addr);
-            const u32 end = page_idx(mmap->addr + mmap->len);
+            const u32 start = page_pfn(mmap->addr);
+            const u32 end = page_pfn(mmap->addr + mmap->len);
             for (u32 i = start; i < end; i++) {
                 page_change_type(&pages[i], PG_RESERVED);
             }
@@ -254,24 +272,24 @@ void page_setup(struct mb_info *mb_info)
     page_change_type(&pages[0], PG_RESERVED);
 
     // Reserve the area used by the BIOS and some other devices
-    const u32 bios_start_idx = page_idx(0xA0000);
-    const u32 bios_end_idx = page_idx(0x100000);
+    const u32 bios_start_idx = page_pfn(0xA0000);
+    const u32 bios_end_idx = page_pfn(0x100000);
     for (u32 i = bios_start_idx; i < bios_end_idx; i++) {
         page_change_type(&pages[i], PG_RESERVED);
     }
     
     // Mark the kernel pages as used by the kernel
     const u32 kernel_end_paddr = (vaddr) &__end - KERNEL_VBASE;
-    const u32 kernel_start_idx = page_idx(KERNEL_PBASE);
-    const u32 kernel_end_idx = page_idx(kernel_end_paddr);
+    const u32 kernel_start_idx = page_pfn(KERNEL_PBASE);
+    const u32 kernel_end_idx = page_pfn(kernel_end_paddr);
     for (u32 i = kernel_start_idx; i < kernel_end_idx; i++) {
         page_change_type(&pages[i], PG_KERNEL);
         pages[i].count = 1;
     }
 
     // Mark the page array as used by the kernel
-    const u32 page_array_start_idx = page_idx((paddr) ((vaddr) pages - KERNEL_VBASE));
-    const u32 page_array_end_idx = page_idx((paddr) &pages[pg_count] - KERNEL_VBASE);
+    const u32 page_array_start_idx = page_pfn((paddr) ((vaddr) pages - KERNEL_VBASE));
+    const u32 page_array_end_idx = page_pfn((paddr) &pages[pg_count] - KERNEL_VBASE);
     for (u32 i = page_array_start_idx; i < page_array_end_idx; i++) {
         page_change_type(&pages[i], PG_KERNEL);
         pages[i].count = 1;
@@ -286,4 +304,22 @@ void page_setup(struct mb_info *mb_info)
     debug("Reserved pages: %u (%u KiB)", pg_reserved, pg_reserved_kib);
     debug("Poisoned pages: %u (%u KiB)", pg_poisoned, pg_poisoned_kib);
     debug("Kernel pages: %u (%u KiB)", pg_kernel, pg_kernel_kib);
+}
+
+/**
+ * @brief Get the page information structure for a given physical address. If
+ * there is no page information structure for the address, this function will
+ * return NULL. This can happen if the address is outside the range of the
+ * regular memory pages.
+ * 
+ * @param addr The physical address of the page.
+ * @return struct page* The page information structure, or NULL if the address
+ * is out of range.
+ */
+struct page *page_info(paddr addr)
+{
+    if (addr >= pg_count * PAGE_SIZE) {
+        return NULL;
+    }
+    return &pages[page_pfn(addr)];
 }

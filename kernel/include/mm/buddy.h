@@ -16,21 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 #include <kernel.h>
-#include <multiboot.h>
-#include <lib/log.h>
-#include <arch/x86.h>
-#include <arch/console.h>
-#include <mm/page.h>
-#include <mm/buddy.h>
+#include <lib/list.h>
 
-_cdecl _init _noreturn
-void startup(struct mb_info *mb_info)
-{
-    arch_x86_setup(mb_info);
-    page_setup(mb_info);
-    buddy_setup();
+/// @brief The minimum order of a block in the buddy allocator (4 Kib blocks).
+#define BUDDY_MIN_ORDER 1
 
-    info("Boot completed !");
-    cpu_freeze(); 
-}
+/// @brief The maximum order of a block in the buddy allocator (64 MiB blocks).
+#define BUDDY_MAX_ORDER 15
+
+/// @brief The maximum number of pages that the buddy allocator can manage.
+#define BUDDY_MAX_PAGES ((512 * 1024 * 1024) / PAGE_SIZE) 
+
+/// @brief The number of buckets in the buddy allocator.
+#define BUDDY_BUCKET_COUNT BUDDY_MAX_ORDER
+
+struct buddy_block {
+    struct list_head list;
+};
+
+void buddy_setup(void);
+void buddy_debug(void);
+void buddy_free(void *ptr, u32 order);
+void *buddy_alloc(u32 order);
