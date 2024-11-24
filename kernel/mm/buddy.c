@@ -326,3 +326,57 @@ void *buddy_alloc(u32 order)
     warn("buddy_alloc(): cannot allocate block of order %u", order);
     return NULL;
 }
+
+/**
+ * @brief Allocate a block of memory from the buddy allocator with an exact
+ * physical frame number. The block allocated will contain the given physical
+ * 
+ * @param pfn The physical frame number of the block to allocate.
+ * @return void* The base address of the allocated block, or NULL if the
+ * allocation failed.
+ */
+void *buddy_alloc_exact(uint pfn)
+{
+    // Find the order of the block that contains the given physical frame
+    // number. The order is the smallest power of two that is greater than
+    // or equal to the number of pages in the block.
+    u32 order = 1;
+    while (buddy_order_to_pfn(order) < pfn) {
+        order++;
+    }
+
+    // Allocate a block of the given order, free extra pages, and return
+    // the base address of the block.
+    void *block = buddy_alloc(order);
+    if (block == NULL) {
+        return NULL;
+    }
+
+    for (u32 i = pfn; i < buddy_order_to_pfn(order); i++) {
+        buddy_free((char *) block + (i * PAGE_SIZE), 1);
+    }
+
+    return block;
+}
+
+/**
+ * @brief Free the exact block of memory allocated by the buddy allocator with
+ * the given physical frame number. The block must have been allocated by the
+ * buddy allocator and must not have been freed before. If the block has already
+ * been freed, this function will panic.
+ * 
+ * @param ptr The base address of the block to free.
+ * @param pfn The number of pages in the block to free.
+ */
+void buddy_free_exact(void *ptr, uint pfn)
+{
+    u32 order = 1;
+    while (buddy_order_to_pfn(order + 1) < pfn) {
+        order++;
+    }
+
+    buddy_free(ptr, order);
+    for (u32 i = buddy_order_to_pfn(order); i < pfn; i++) {
+        buddy_free((char *) ptr + (i * PAGE_SIZE), 1);
+    }
+}

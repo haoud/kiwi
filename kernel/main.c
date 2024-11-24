@@ -22,6 +22,7 @@
 #include <arch/x86.h>
 #include <arch/console.h>
 #include <mm/page.h>
+#include <mm/slub.h>
 #include <mm/buddy.h>
 
 _cdecl _init _noreturn
@@ -30,6 +31,22 @@ void startup(struct mb_info *mb_info)
     arch_x86_setup(mb_info);
     page_setup(mb_info);
     buddy_setup();
+    slub_setup();
+
+    // Test the slub allocator
+    struct slub_cache *cache = slub_create_cache("test", 16, 0, SLUB_NONE);
+    void *obj1 = slub_alloc(cache);
+    void *obj2 = slub_alloc(cache);
+    void *obj3 = slub_alloc(cache);
+
+    debug("obj1: %p", obj1);
+    debug("obj2: %p", obj2);
+    debug("obj3: %p", obj3);
+
+    slub_free(cache, obj1);
+    slub_free(cache, obj2);
+    slub_free(cache, obj3);
+    slub_destroy_cache(cache);
 
     info("Boot completed !");
     cpu_freeze(); 

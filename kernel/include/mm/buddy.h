@@ -39,4 +39,6 @@ struct buddy_block {
 void buddy_setup(void);
 void buddy_debug(void);
 void buddy_free(void *ptr, u32 order);
+void buddy_free_exact(void *ptr, uint pfn);
 void *buddy_alloc(u32 order);
+void *buddy_alloc_exact(uint pfn);  
