@@ -24,11 +24,12 @@
 #define PAGE_SIZE   4096
 #define PAGE_SHIFT  12
 
-#define PG_FREE     0x01
-#define PG_KERNEL   0x02
-#define PG_RESERVED 0x04
-#define PG_POISONED 0x08
-#define PG_LOCKED   0x10
+#define PG_FREE     0x01    // Free to use
+#define PG_KERNEL   0x02    // Used by the kernel
+#define PG_RESERVED 0x04    // Reserved by the hardware
+#define PG_POISONED 0x08    // Poisoned memory, cannot be used
+#define PG_LOCKED   0x10    // Locked memory, cannot be swapped/paged out
+#define PG_BUDDY    0x20    // Handled by the buddy allocator
 
 void page_setup(struct mb_info *mb_info);
 void page_free(paddr addr);
@@ -83,6 +84,17 @@ static inline bool page_lowmem_compatible(paddr addr) {
  */
 static inline struct page *page_pfn_info(u32 idx) {
     return page_info(idx << PAGE_SHIFT);
+}
+
+/**
+ * @brief Return an offset in bytes from a page frame number. This can also
+ * be seen as the size in the specified unit of pages. 
+ * 
+ * @param pfn The page frame number to convert in bytes.
+ * @return u32 The offset in bytes.
+ */
+static inline u32 page_pnf_to_offset(u32 pfn) {
+    return pfn << PAGE_SHIFT;
 }
 
 /**

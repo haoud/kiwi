@@ -175,8 +175,8 @@ static bool slub_add_slub(struct slub_cache *cache)
 _init
 void slub_setup(void)
 {
-    vaddr slub_cache_slub_mem = (vaddr) buddy_alloc(4);
-    vaddr slub_slub_mem = (vaddr) buddy_alloc(4);
+    vaddr slub_cache_slub_mem = (vaddr) buddy_alloc(2);
+    vaddr slub_slub_mem = (vaddr) buddy_alloc(2);
 
     if (!slub_cache_slub_mem || !slub_slub_mem) {
         panic("Failed to allocate memory for slub caches");

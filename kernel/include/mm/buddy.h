@@ -21,16 +21,16 @@
 #include <lib/list.h>
 
 /// @brief The minimum order of a block in the buddy allocator (4 Kib blocks).
-#define BUDDY_MIN_ORDER 1
+#define BUDDY_MIN_ORDER 0
 
 /// @brief The maximum order of a block in the buddy allocator (64 MiB blocks).
-#define BUDDY_MAX_ORDER 15
+#define BUDDY_MAX_ORDER 14
 
 /// @brief The maximum number of pages that the buddy allocator can manage.
 #define BUDDY_MAX_PAGES ((512 * 1024 * 1024) / PAGE_SIZE) 
 
 /// @brief The number of buckets in the buddy allocator.
-#define BUDDY_BUCKET_COUNT BUDDY_MAX_ORDER
+#define BUDDY_BUCKET_COUNT BUDDY_MAX_ORDER + 1
 
 struct buddy_block {
     struct list_head list;

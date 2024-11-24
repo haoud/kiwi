@@ -34,7 +34,7 @@ void startup(struct mb_info *mb_info)
     slub_setup();
 
     // Test the slub allocator
-    struct slub_cache *cache = slub_create_cache("test", 16, 0, SLUB_NONE);
+    struct slub_cache *cache = slub_create_cache("test", 16, 0, 0, SLUB_NONE);
     void *obj1 = slub_alloc(cache);
     void *obj2 = slub_alloc(cache);
     void *obj3 = slub_alloc(cache);

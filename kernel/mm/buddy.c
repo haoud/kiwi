@@ -39,19 +39,6 @@ static struct list_head buddy_buckets[BUDDY_BUCKET_COUNT] = { };
 static bool buddy_initialized = false;
 
 /**
- * @brief Get the bucket for the given order. The bucket is the free list that
- * contains the blocks of the given order.
- * 
- * @param order The order of the block. The order must be between 
- * `BUDDY_MIN_ORDER` and `BUDDY_MAX_ORDER` inclusive. If the order is outside 
- * this range, the behaviour is undefined.
- * @return struct list_head* The free list for the given order. 
- */
-static struct list_head *buddy_get_bucket(u32 order) {
-    return &buddy_buckets[order - BUDDY_MIN_ORDER];
-}
-
-/**
  * @brief Create a buddy block at the specified base address and initialize it.
  * It simply creates a new `buddy_block` structure at the given base address 
  * without adding it to any free list or modifying the page information for the
@@ -77,7 +64,7 @@ static struct buddy_block *create_buddy_block_at(vaddr base) {
  * @return u32 The address of the buddy block.
  */
 static u32 buddy_address(vaddr base, u32 order) {
-    return base ^ (1 << (order + 11));
+    return base ^ (1 << (order + 12));
 }
 
 /**
@@ -87,7 +74,7 @@ static u32 buddy_address(vaddr base, u32 order) {
  * @return u32 The number of pages in the block.
  */
 static u32 buddy_order_to_pfn(u32 order) {
-    return 1 << (order - 1);
+    return 1 << order;
 }
 
 /**
@@ -127,7 +114,9 @@ static bool buddy_can_coalesce(vaddr vbase) {
     struct page *buddy = page_info(buddy_address(base, pg->order));
     return (buddy != NULL) &&
            (pg->flags & PG_FREE) &&
+           (pg->flags & PG_BUDDY) && 
            (buddy->flags & PG_FREE) &&
+           (buddy->flags & PG_BUDDY) &&
            (pg->order == buddy->order) &&
            (pg->order < BUDDY_MAX_ORDER);
 }
@@ -175,7 +164,8 @@ void buddy_setup(void) {
         if (pg == NULL) {
             break;
         } else if (pg->flags & PG_FREE) {
-            buddy_free((void *) paddr_to_vaddr(i * PAGE_SIZE), 1);
+            pg->flags |= PG_BUDDY;
+            buddy_free((void *) KERNEL_VBASE + page_pnf_to_offset(i), 0);
         }
     }
 }
@@ -256,8 +246,7 @@ void buddy_free(void *ptr, u32 order)
     // list. We simply need to create a new buddy block structure at the base
     // address of the coalesced block and add it to the free list.
     struct buddy_block *block = create_buddy_block_at(base);
-    list_add_head(buddy_get_bucket(pg->order), &block->list);
-
+    list_add_head(&buddy_buckets[pg->order], &block->list);
 }
 
 /**
@@ -272,7 +261,6 @@ void buddy_free(void *ptr, u32 order)
  */
 void *buddy_alloc(u32 order)
 {
-    assert(order >= BUDDY_MIN_ORDER);
     assert(order <= BUDDY_MAX_ORDER);
 
     // Find the first non-empty bucket with a block of at least
@@ -281,8 +269,8 @@ void *buddy_alloc(u32 order)
     // split it into smaller blocks until the desired order is
     // reached.
     for (u32 i = order; i <= BUDDY_MAX_ORDER; i++) {
-        struct list_head *bucket = buddy_get_bucket(i);
-        struct list_head *entry = list_pop_head(bucket);   
+        struct list_head *entry = list_pop_head(&buddy_buckets[i]);   
+        struct buddy_block *block = list_entry(entry, struct buddy_block, list);
 
         // If the bucket is empty, continue to the next bucket. The block
         // will be found in a bucket with a higher order and will be split
@@ -291,14 +279,12 @@ void *buddy_alloc(u32 order)
             continue;
         }
         
-        struct buddy_block *block = list_entry(entry, struct buddy_block, list);
-
         // Split the block into smaller blocks until the desired order
         // is reached. The remaining blocks are added to the free list.
         for (u32 j = i; j > order; j--) {
             const vaddr base = buddy_address((vaddr) block, j - 1);
             struct buddy_block *buddy = create_buddy_block_at(base);
-            list_add_head(buddy_get_bucket(j - 1), &buddy->list);
+            list_add_head(&buddy_buckets[j - 1], &buddy->list);
 
             // Update the page information for the buddy block to reflect
             // the new order of the created block.
@@ -340,7 +326,7 @@ void *buddy_alloc_exact(uint pfn)
     // Find the order of the block that contains the given physical frame
     // number. The order is the smallest power of two that is greater than
     // or equal to the number of pages in the block.
-    u32 order = 1;
+    u32 order = 0;
     while (buddy_order_to_pfn(order) < pfn) {
         order++;
     }
@@ -353,7 +339,7 @@ void *buddy_alloc_exact(uint pfn)
     }
 
     for (u32 i = pfn; i < buddy_order_to_pfn(order); i++) {
-        buddy_free((char *) block + (i * PAGE_SIZE), 1);
+        buddy_free((char *) block + page_pnf_to_offset(i), 1);
     }
 
     return block;
@@ -370,13 +356,13 @@ void *buddy_alloc_exact(uint pfn)
  */
 void buddy_free_exact(void *ptr, uint pfn)
 {
-    u32 order = 1;
+    u32 order = 0;
     while (buddy_order_to_pfn(order + 1) < pfn) {
         order++;
     }
 
     buddy_free(ptr, order);
     for (u32 i = buddy_order_to_pfn(order); i < pfn; i++) {
-        buddy_free((char *) ptr + (i * PAGE_SIZE), 1);
+        buddy_free((char *) ptr + page_pnf_to_offset(i), 1);
     }
 }
