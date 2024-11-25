@@ -199,7 +199,7 @@ void buddy_free(void *ptr, u32 order)
     // Some sanity checks to ensure that the parameter is valid
     // and that the block has not been freed before. Those checks
     // are logic checks and should not happen in a normal execution.
-    if ((base % PAGE_SIZE) != 0) {
+    if (!page_is_aligned(base)) {
         panic("buddy_free(): unaligned page address");
     } else if (buddy_initialized) {
         if (pg->flags & PG_RESERVED) {

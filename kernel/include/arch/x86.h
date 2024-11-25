@@ -18,89 +18,16 @@
  */
 #pragma once
 #include <kernel.h>
+#include <lib/math.h>
 #include <multiboot.h>
 #include <arch/cpu.h>
 
 typedef u32 paddr;
 typedef u32 vaddr;
 
-/**
- * @brief Align a physical address to the given alignment by rounding it up. If
- * the address is already aligned, it is returned as is and is not modified.
- * 
- * @param addr The address to align.
- * @param align The alignment to use, must be a power of 2.
- * @return paddr The aligned address.
- */
-static inline paddr paddr_align_up(paddr addr, size_t align)
-{
-    return (addr + align - 1) & ~(align - 1);
-}
-
-/**
- * @brief Align a physical address to the given alignment by rounding it down.
- * If the address is already aligned, it is returned as is and is not modified.
- * 
- * @param addr The address to align.
- * @param align The alignment to use, must be a power of 2.
- * @return paddr The aligned address.
- */
-static inline paddr paddr_align_down(paddr addr, size_t align)
-{
-    return addr & ~(align - 1);
-}
-
-/**
- * @brief Check if a physical address is aligned to the given alignment.
- * 
- * @param addr The address to check.
- * @param align The alignment to check, must be a power of 2.
- * @return true If the address is aligned to the given alignment.
- * @return false If the address is not aligned to the given alignment.
- */
-static inline bool paddr_is_aligned(paddr addr, size_t align)
-{
-    return (addr & (align - 1)) == 0;
-}
-
-/**
- * @brief Align a virtual address to the given alignment by rounding it up. If
- * the address is already aligned, it is returned as is and is not modified.
- * 
- * @param addr The address to align.
- * @param align The alignment to use, must be a power of 2.
- * @return vaddr The aligned address.
- */
-static inline vaddr vaddr_align_up(vaddr addr, size_t align)
-{
-    return (addr + align - 1) & ~(align - 1);
-}
-
-/**
- * @brief Align a virtual address to the given alignment by rounding it down.
- * If the address is already aligned, it is returned as is and is not modified.
- * 
- * @param addr The address to align.
- * @param align The alignment to use, must be a power of 2.
- * @return vaddr The aligned address.
- */
-static inline vaddr vaddr_align_down(vaddr addr, size_t align)
-{
-    return addr & ~(align - 1);
-}
-
-/**
- * @brief Check if a virtual address is aligned to the given alignment.
- * 
- * @param addr The address to check.
- * @param align The alignment to check, must be a power of 2.
- * @return true If the address is aligned to the given alignment.
- * @return false If the address is not aligned to the given alignment.
- */
-static inline bool vaddr_is_aligned(vaddr addr, size_t align)
-{
-    return (addr & (align - 1)) == 0;
-}
+#define page_align_up(a)    align_up(a, PAGE_SIZE)
+#define page_align_down(a)  align_down(a, PAGE_SIZE)
+#define page_is_aligned(a)  is_aligned(a, PAGE_SIZE)
 
 /// The address of this symbol is the end of the kernel image in memory. The
 /// address of this symbol is set by the linker script and DOES NOT CONTAIN

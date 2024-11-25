@@ -104,7 +104,7 @@ static inline u32 page_pnf_to_offset(u32 pfn) {
  * @return u32 The page index.
  */
 static inline u32 page_pfn(paddr addr) {
-    return addr / PAGE_SIZE;
+    return addr >> PAGE_SHIFT;
 }
 
 struct page {

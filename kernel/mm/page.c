@@ -17,6 +17,7 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <lib/log.h>
+#include <lib/math.h>
 #include <lib/panic.h>
 #include <mm/page.h>
 #include <mm/buddy.h>
@@ -73,7 +74,7 @@ static void sanitize_mmap(struct mb_info *mb_info)
     while (mmap < mb_mmap_end(mb_info)) {
         if (mmap->type == MB_MEMORY_AVAILABLE) {
             const vaddr kernel_start = KERNEL_VBASE + 0x100000;
-            const vaddr kernel_end = vaddr_align_up((vaddr) &__end, PAGE_SIZE);
+            const vaddr kernel_end = page_align_up((vaddr) &__end);
             const u32 kernel_size = kernel_end - kernel_start;
 
             if (mmap->addr == KERNEL_PBASE) {
@@ -143,7 +144,7 @@ static void *allocate_boot_memory(struct mb_info *mb_info, size_t size)
     }
 
     // Calculate the number of bytes needed to align the memory
-    const u32 aligned_area_base = paddr_align_up(free_mmap->addr, align);
+    const u32 aligned_area_base = align_up(free_mmap->addr, align);
     const u32 misalign = aligned_area_base - free_mmap->addr;
 
     // Update the memory map
@@ -228,7 +229,7 @@ void page_setup(struct mb_info *mb_info)
         panic("Unable to find last regular address in memory map");
     }
 
-    pg_count = page_pfn(paddr_align_up(pg_last, PAGE_SIZE));
+    pg_count = page_pfn(page_align_up(pg_last));
     pages = allocate_boot_memory(mb_info, pg_count * sizeof(struct page));
     if (pages == NULL) {
         panic("Unable to allocate memory for page array");
@@ -318,8 +319,9 @@ void page_setup(struct mb_info *mb_info)
  */
 struct page *page_info(paddr addr)
 {
-    if (addr >= pg_count * PAGE_SIZE) {
+    const uint pnf = page_pfn(addr);
+    if (pnf >= pg_count) {
         return NULL;
     }
-    return &pages[page_pfn(addr)];
+    return &pages[pnf];
 }

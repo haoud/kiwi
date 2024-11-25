@@ -17,11 +17,9 @@
  * along with Kiwi. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <lib/log.h>
+#include <lib/math.h>
 #include <mm/slub.h>
 #include <mm/buddy.h>
-
-// HACK: double evaluation problem, remplace it ASAP
-#define align_up(x, a) (((x) + (a) - 1) & ~((a) - 1))
 
 static struct slub_cache slub_cache_cache = { };
 static struct slub_cache slub_cache = { };
