@@ -20,6 +20,7 @@
 #include <mm/slub.h>
 #include <mm/buddy.h>
 
+// HACK: double evaluation problem, remplace it ASAP
 #define align_up(x, a) (((x) + (a) - 1) & ~((a) - 1))
 
 static struct slub_cache slub_cache_cache = { };
@@ -84,15 +85,30 @@ static void slub_new_cache(
         obj_align = SLUB_MIN_ALIGN;
     }
 
+    // Calculate the slub size needed to allocate the given object size. By
+    // default, the slub size is set to the 4 pages, and work well for small
+    // objects. However, for larger objects, the slub size should be adjusted
+    // to avoid wasting memory. In the future, we must find the best slub size
+    // for each object size to waste as little memory as possible.
+    uint slub_default_pfn = buddy_order_to_pfn(SLUB_DEFAULT_ORDER);
+    uint slub_min_pfn = buddy_nearest_order(page_pfn((paddr) obj_size));
+    uint slub_pfn = (slub_min_pfn > slub_default_pfn)
+        ? slub_min_pfn
+        : slub_default_pfn;
+
+    uint slub_size = slub_pfn * PAGE_SIZE;
+    uint obj_per_slub = slub_size / obj_size;
+
     cache->name = name;
     cache->flags = flags;
     cache->obj_align = obj_align;
     cache->obj_size = obj_size;
     cache->min_free = min_free;
+    cache->order = buddy_nearest_order(slub_pfn);
 
     cache->total_obj_count = 0;
     cache->free_obj_count = 0;
-    cache->obj_per_slub = SLUB_OBJ_COUNT;
+    cache->obj_per_slub = obj_per_slub;
 
     list_init(&cache->partial_slubs);
     list_init(&cache->free_slubs);
@@ -117,23 +133,23 @@ static void slub_new_slub(
     vaddr base,
     size_t size)
 {
-    const uint max_objects = size / cache->obj_size;
-    assert(max_objects <= SLUB_MAX_OBJ_COUNT);
+    uint aligned_obj_size = align_up(cache->obj_size, cache->obj_size);
+    uint max_obj = size / aligned_obj_size;
+    assert(max_obj <= SLUB_MAX_OBJ_COUNT);
 
     slub->cache = cache;
     slub->base = base;
     slub->size = size;
-    slub->max_objects = (u16) max_objects;
-    slub->free_objects = (u16) max_objects;
+    slub->max_objects = (u16) max_obj;
+    slub->free_objects = (u16) max_obj;
 
     list_init(&slub->slub_node);
     list_init(&slub->free_obj_list);
     list_add_tail(&cache->free_slubs, &slub->slub_node);
 
     // Create the free object list for the slub.
-    for (u16 i = 0; i < max_objects; i++) {
-        void *obj = (void *) align_up(
-            base + i * cache->obj_size, cache->obj_align);
+    for (u16 i = 0; i < max_obj; i++) {
+        void *obj = (void *) (base + i * aligned_obj_size);
         slub_add_to_free_list(slub, obj);
     }
 }
@@ -154,15 +170,14 @@ static bool slub_add_slub(struct slub_cache *cache)
         return false;
     }
 
-    size_t size = cache->obj_size * cache->obj_per_slub;
-    uint pfn = vaddr_align_up(size, PAGE_SIZE) / PAGE_SIZE;
-    void *base = buddy_alloc_exact(pfn);
+    void *base = buddy_alloc(cache->order);
     if (base == NULL) {
         slub_free(&slub_cache, slub);
         return false;
     }
 
     // Create the new slub and add it to the free slubs list of the cache.
+    size_t size = buddy_order_to_pfn(cache->order) * PAGE_SIZE;
     slub_new_slub(cache, slub, (vaddr) base, size);
     return true;
 }
@@ -233,7 +248,7 @@ void slub_free(struct slub_cache *cache, void *obj)
     }
 
     if (cache->flags & SLUB_DEBUG) {
-        debug("%s cache : cannoy free unknown object 0x%p", cache->name, obj);
+        debug("%s cache : cannot free unknown object 0x%p", cache->name, obj);
     }
 }
 
@@ -306,8 +321,7 @@ void slub_destroy_cache(struct slub_cache *cache)
 
     list_foreach(&cache->free_slubs, node) {
         struct slub *slub = list_entry(node, struct slub, slub_node);
-        buddy_free_exact((void *) slub->base, 
-            align_up(slub->size, PAGE_SIZE) / PAGE_SIZE);
+        buddy_free((void *) slub->base, cache->order);
         slub_free(&slub_cache, slub);
     }
 
@@ -336,6 +350,10 @@ struct slub_cache *slub_create_cache(
     struct slub_cache *cache = slub_alloc(&slub_cache_cache);
     if (cache == NULL) {
         return NULL;
+    }
+
+    if (flags & SLUB_DEBUG) {
+        debug("Creating cache %s", name);
     }
 
     slub_new_cache(cache, name, obj_size, obj_align, min_free, flags);

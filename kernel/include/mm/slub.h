@@ -22,9 +22,9 @@
 #include <lib/list.h>
 #include <arch/paging.h>
 
-#define SLUB_MIN_SIZE   8   // Minimum size of an object
-#define SLUB_MIN_ALIGN  8   // Minimum alignment of an object
-#define SLUB_OBJ_COUNT  32  // Default number of objects per slub
+#define SLUB_MIN_SIZE   8       // Minimum size of an object
+#define SLUB_MIN_ALIGN  8       // Minimum alignment of an object
+#define SLUB_DEFAULT_ORDER  2   // Default page order for slub size
 
 #define SLUB_MAX_OBJ_COUNT  UINT16_MAX  // Maximum number of objects per slub
 #define SLUB_MAX_OBJ_SIZE   UINT16_MAX  // Maximum size of an object
@@ -55,6 +55,9 @@ struct slub_cache {
 
     /// @brief A set of flags that control the behavior of the cache.
     uint flags;
+
+    /// @brief The order of the slub size, in pages.
+    u16 order;
 
     /// @brief The number of total objects that the cache can hold.
     u32 total_obj_count;

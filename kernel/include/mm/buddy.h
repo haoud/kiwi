@@ -36,9 +36,35 @@ struct buddy_block {
     struct list_head list;
 };
 
+/**
+ * @brief Get the nearest order of a block that can contain the given number of
+ * pages. However, the order returned is not garanteed to be supported by the
+ * buddy allocator. The order is the smallest power of two that is greater than
+ * or equal to the number of pages.
+ * 
+ * @param pages The number of pages that the block must contain.
+ * @return uint The order of the block that can contain the given number
+ * of pages. If the number of pages is zero or one, the order will be zero.
+ */
+static inline uint buddy_nearest_order(uint pages) {
+    if (pages <= 1 ) {
+        return 0;
+    } else {
+        return 32 - __builtin_clz(pages - 1);
+    }
+}
+
+/**
+ * @brief Get the number of pages in the given order block.
+ * 
+ * @param order The order of the block. 
+ * @return u32 The number of pages in the block.
+ */
+static inline u32 buddy_order_to_pfn(u32 order) {
+    return 1 << order;
+}
+
 void buddy_setup(void);
 void buddy_debug(void);
 void buddy_free(void *ptr, u32 order);
-void buddy_free_exact(void *ptr, uint pfn);
 void *buddy_alloc(u32 order);
-void *buddy_alloc_exact(uint pfn);  
