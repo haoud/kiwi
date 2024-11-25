@@ -31,9 +31,9 @@
 #define PG_LOCKED   0x10    // Locked memory, cannot be swapped/paged out
 #define PG_BUDDY    0x20    // Handled by the buddy allocator
 
+void page_debug_info(void);
+
 void page_setup(struct mb_info *mb_info);
-void page_free(paddr addr);
-void page_use(paddr addr);
 struct page *page_info(paddr addr);
 
 /**

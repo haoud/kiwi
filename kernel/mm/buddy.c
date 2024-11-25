@@ -38,6 +38,12 @@ static struct list_head buddy_buckets[BUDDY_BUCKET_COUNT] = { };
  */
 static bool buddy_initialized = false;
 
+/// The number of kernel pages in the system, defined in kernel/mm/page.c
+extern unsigned int pg_kernel;
+
+/// The number of free pages in the system, defined in kernel/mm/page.c
+extern unsigned int pg_free;
+
 /**
  * @brief Create a buddy block at the specified base address and initialize it.
  * It simply creates a new `buddy_block` structure at the given base address 
@@ -186,6 +192,12 @@ void buddy_free(void *ptr, u32 order)
         assert(!(page->flags & PG_FREE) || !buddy_initialized);
         assert(!(page->flags & PG_RESERVED));
         assert(!(page->flags & PG_POISONED));
+        if (likely(buddy_initialized)) {
+            if (page->flags & PG_KERNEL) {
+                pg_kernel--;
+            }
+            pg_free++;
+        }
         page->flags &= ~PG_KERNEL;
         page->flags |= PG_FREE;
         page->order = 0;
@@ -292,8 +304,14 @@ void *buddy_alloc(u32 order)
             assert(!(page->flags & PG_POISONED));
             assert(!(page->flags & PG_KERNEL));
             assert(page->flags & PG_FREE);
+            
+            page->flags |= PG_KERNEL;
             page->flags &= ~PG_FREE;
             page->order = 0;
+            page->count = 0;
+
+            pg_kernel++;
+            pg_free--;
         }
 
         return block;

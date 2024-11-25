@@ -30,27 +30,27 @@
 /// the number of references to the page, and other information.
 static struct page *pages = NULL;
 
+/// The number of pages in the system. This is also the number of entries
+/// in the `pages` array.
+static unsigned int pg_count = 0;
+
 /// The number of reserved pages in the system. Reserved pages are pages
 /// reserved by devices and does not contain RAM data. An example of reserved
 /// pages are VGA memory, used by the VGA controller to store the screen
 /// buffer.
-static unsigned int pg_reserved = 0;
+unsigned int pg_reserved = 0;
 
 /// The number of poisoned pages in the system. Poisoned pages are pages
 /// that cannot be used for any purpose, including allocation or device
 /// mapping. They are either bad memory or memory that was not properly
 /// included in the memory map.
-static unsigned int pg_poisoned = 0;
+unsigned int pg_poisoned = 0;
 
 /// The number of kernel pages in the system.
-static unsigned int pg_kernel = 0;
+unsigned int pg_kernel = 0;
 
 /// The number of free pages in the system.
-static unsigned int pg_free = 0;
-
-/// The number of pages in the system. This is also the number of entries
-/// in the `pages` array.
-static unsigned int pg_count = 0;
+unsigned int pg_free = 0;
 
 /**
  * @brief Sanitize the memory map provided by the bootloader. Essentially, this
@@ -295,7 +295,10 @@ void page_setup(struct mb_info *mb_info)
         page_change_type(&pages[i], PG_KERNEL);
         pages[i].count = 1;
     }
+}
 
+void page_debug_info(void)
+{
     const u32 pg_free_kib = pg_free * 4;
     const u32 pg_kernel_kib = pg_kernel * 4;
     const u32 pg_reserved_kib = pg_reserved * 4;

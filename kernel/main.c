@@ -49,5 +49,6 @@ void startup(struct mb_info *mb_info)
     slub_destroy_cache(cache);
 
     info("Boot completed !");
+    page_debug_info();
     cpu_freeze(); 
 }

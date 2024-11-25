@@ -39,7 +39,7 @@ static struct slub slub_slub = { };
 static bool slub_contains(struct slub *slub, void *ptr)
 {
     return (vaddr) ptr >= slub->base &&
-           (vaddr) ptr < slub->base + slub->size;
+           (vaddr) ptr < slub->base + buddy_order_to_bytes(slub->order);
 }
 
 /**
@@ -129,15 +129,15 @@ static void slub_new_slub(
     struct slub_cache *cache,
     struct slub *slub,
     vaddr base,
-    size_t size)
+    uint order)
 {
     uint aligned_obj_size = align_up(cache->obj_size, cache->obj_size);
-    uint max_obj = size / aligned_obj_size;
+    uint max_obj = buddy_order_to_bytes(order) / aligned_obj_size;
     assert(max_obj <= SLUB_MAX_OBJ_COUNT);
 
     slub->cache = cache;
     slub->base = base;
-    slub->size = size;
+    slub->order = order;
     slub->max_objects = (u16) max_obj;
     slub->free_objects = (u16) max_obj;
 
@@ -175,8 +175,7 @@ static bool slub_add_slub(struct slub_cache *cache)
     }
 
     // Create the new slub and add it to the free slubs list of the cache.
-    size_t size = buddy_order_to_pfn(cache->order) * PAGE_SIZE;
-    slub_new_slub(cache, slub, (vaddr) base, size);
+    slub_new_slub(cache, slub, (vaddr) base, cache->order);
     return true;
 }
 
@@ -188,8 +187,8 @@ static bool slub_add_slub(struct slub_cache *cache)
 _init
 void slub_setup(void)
 {
-    vaddr slub_cache_slub_mem = (vaddr) buddy_alloc(2);
-    vaddr slub_slub_mem = (vaddr) buddy_alloc(2);
+    vaddr slub_cache_slub_mem = (vaddr) buddy_alloc(0);
+    vaddr slub_slub_mem = (vaddr) buddy_alloc(0);
 
     if (!slub_cache_slub_mem || !slub_slub_mem) {
         panic("Failed to allocate memory for slub caches");
@@ -199,13 +198,12 @@ void slub_setup(void)
     // first slub since the slub cache is not yet available.
     slub_new_cache(&slub_cache_cache, "slub cache", sizeof(struct slub_cache),
                    0, 1, SLUB_NONE);
-    slub_new_slub(&slub_cache_cache, &slub_cache_slub,
-                  slub_cache_slub_mem, 4 * PAGE_SIZE);
+    slub_new_slub(&slub_cache_cache, &slub_cache_slub, slub_cache_slub_mem, 0);
 
     // Create the cache for allocating slubs and manually add the first slub
     // to the cache since the slub cache is not yet available.
     slub_new_cache(&slub_cache, "slub", sizeof(struct slub), 0, 1, SLUB_NONE);
-    slub_new_slub(&slub_cache, &slub_slub, slub_slub_mem, 4 * PAGE_SIZE);
+    slub_new_slub(&slub_cache, &slub_slub, slub_slub_mem, 0);
 }
 
 /**

@@ -106,8 +106,8 @@ struct slub {
     /// allocated.
     vaddr base;
 
-    /// @brief The size of the slub in bytes.
-    size_t size;
+    /// @brief The order of the slub, in pages.
+    uint order;
 
     /// @brief  The maximum number of objects that can be allocated in the
     /// slub.

@@ -64,6 +64,16 @@ static inline u32 buddy_order_to_pfn(u32 order) {
     return 1 << order;
 }
 
+/**
+ * @brief Get the number of bytes in the given order block.
+ * 
+ * @param order The order of the block.
+ * @return u32 The number of bytes in the block.
+ */
+static inline u32 buddy_order_to_bytes(u32 order) {
+    return buddy_order_to_pfn(order) * PAGE_SIZE;
+}
+
 void buddy_setup(void);
 void buddy_debug(void);
 void buddy_free(void *ptr, u32 order);
